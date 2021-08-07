@@ -6,21 +6,21 @@ Cria as referências para a loja, além de ser responsável pelo controle dos Pr
 
 ```jsx
 const loja = new Loja()
-const categorias = loja.categorias() # Retorna um objeto Categorias 
-const produtos = loja.produtos()     # Retonar um objeto Produtos  
+const categorias = loja.categorias() # retorna um objeto Categorias 
+const produtos = loja.produtos()     # retonar um objeto Produtos  
 ```
 
 # Categorias
 
-Responsável por listar, adicionar ou selecionar uma Categoria especifica.
+responsável por listar, adicionar ou selecionar uma Categoria especifica.
 
 ```jsx
 const loja = new Loja()
 
-# Retorna um objeto Categorias 
+# retorna um objeto Categorias 
 const categorias = loja.categorias()
 
-# Mostra todas as categorias no console
+# mostra todas as categorias no console
 categorias.listar()
 
 # ou
@@ -36,7 +36,7 @@ const loja = new Loja()
 const categorias = loja.categorias()
 const categoria = categorias.createCategoria()
 
-# Modifica as informações presente da categoria
+# modifica as informações presente da Categoria
 categoria.nome = "Hello word"
 ```
 
@@ -132,7 +132,7 @@ const produto = produtos.getProduto(produto_id);
 produto.nome = "Pasta de dente 2"
 produto.alterar()
 
-# Ou poderia remover
+# ou, poderia remover:
 
 produto.remover()
 ```
