@@ -119,6 +119,7 @@ produto.descricao = "Marca colgate"
 produto.preco = 5.60
 produto.imagem = "/img/produto_sem_foto.png"
 produto.codigo = 1234
+produto.peso = 0.100
 
 produto.inserir()
 ```
