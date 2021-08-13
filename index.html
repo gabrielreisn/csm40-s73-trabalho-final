@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="src/Categorias.js"></script>
+    <script src="src/Categoria.js"></script>
+    <script src="src/Produtos.js"></script>
+    <script src="src/Produto.js"></script>
+    <script src="src/Fetch.js"></script>
+    <script src="src/Loja.js"></script>
+    <link rel="stylesheet" href="css/global.css">
+    <style>
+      
+      .imagem{
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+      }
+
+      .list{
+        background-color: grey;
+        width:190px;
+        display: flex;
+        align-items: center;
+        padding: 0px 0px 0px 15px;
+      }
+
+      .nome{
+        font-size: 25px;
+        padding-left: 10px;
+      }
+
+
+
+    </style>
+  </head>
+  <body>
+    <div id="Categorias">
+
+      <div class="list">
+        <img src="img/default.jpg" class="imagem"> </img>
+        <p class="nome">teste</p>
+      </div>
+
+      <button id="myBtn">Open Modal</button>
+
+      <div id="myModal" class="modal" style="display: none;">
+        <div class="modal-content">
+          <span class="close" id="close">&times;</span>
+          <p>Some text in the Modal..</p>
+        </div>
+      </div>
+    </div>
+
+    <div id="Produtos"></div>
+
+    <script>
+
+
+      const abrirModal = _ => {
+        const modal = document.getElementById("myModal");
+        modal.style.display = "block";
+      }
+
+      const fecharModal = _ => {
+        const modal = document.getElementById("myModal");
+        modal.style.display = "none";
+      }
+
+      const object = document.querySelector("#myBtn")
+      const objectClose = document.querySelector("#close")
+      object.addEventListener("click", abrirModal)
+      objectClose.addEventListener("click", fecharModal)
+
+
+
+      const Main = async (_) => {
+        const loja = new Loja();
+        const categorias = loja.categorias();
+        const produtos = loja.produtos();
+        const categoria = await categorias.createCategoria();
+
+        const produto = produtos.createProduto();
+        produto.id = 135;
+        produto.nome = "Shampoo automotivel 2";
+        produto.categoria = 58;
+        produto.descricao = "Voxx";
+        produto.preco = 65.6;
+        produto.imagem = "/img/produto_sem_foto.png";
+        produto.codigo = 152;
+        produto.peso = 0.1;
+
+        produto.inserir();
+
+        produtos.listar();
+      };
+
+    </script>
+  </body>
+</html>
