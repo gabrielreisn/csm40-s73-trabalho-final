@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="/src/Categorias.js"></script>
+  <script src="/src/Categoria.js"></script>
+  <script src="/src/Produtos.js"></script>
+  <script src="/src/Produto.js"></script>
+  <script src="/src/Fetch.js"></script>
+  <script src="/src/Loja.js"></script>
+  <link rel="stylesheet" href="/css/global.css">
+  <link rel="stylesheet" href="/css/list.css">
+  <link rel="stylesheet" href="/css/topo.css">
+
+</head>
+<body>
+  <div class="topnav">
+    <div class="topnav-centered">
+      <a href="/categorias/" class="active">Categorias</a>
+      <a href="/produtos/">Produtos</a>
+      <a href="/pedidos/">Pedidos</a>
+    </div>
+  </div>
+  
+  <div class="container">
+    <div class="box">
+      <div class="topo">
+        <h2>Categorias</h2>
+        <a href="inserir.html"><button class="btn-adicionar">&plus; inserir</button></a>
+      </div>
+      <hr class="space">
+      <div id="lista_produtos" class="lista scroll"></div>
+    </div>
+  </div>
+
+  <script>
+
+    class ListaProdutos{
+
+      constructor({ div_id, produtos }){
+        this.div_lista_produtos = div_id
+        this.produtos = produtos
+      }
+
+      getProdutos(){
+        this.dados = this.produtos.getLista()
+        return this.dados
+      }
+
+
+      async render(){
+        const lista_produtos = document.getElementById(this.div_lista_produtos)
+        const dados = await this.getProdutos()
+        dados.forEach(produto => {
+          const elementHTML = this.getItem(produto)
+          lista_produtos.appendChild(elementHTML)
+        })
+      }
+
+      getItem(dado){
+        const a = document.createElement('a');
+        const div = document.createElement('div')
+        const image = document.createElement('img')
+        const paragraph = document.createElement('p')
+        
+        div.id = "categoria_" + dado.id
+        div.className = "list"
+        image.src = "/img/default.jpg"
+        image.className = "imagem"
+        paragraph.className = "nome"
+        paragraph.innerHTML = dado.nome
+        div.appendChild(image)
+        div.appendChild(paragraph)
+        a.appendChild(div)
+        a.setAttribute('href', `./editar.html?id=${dado.id}`)
+        return a;
+      }
+    }
+
+    const div_id = "lista_produtos"
+    const loja = new Loja();
+    const produtos = loja.categorias();
+
+    const dependencies = {
+      div_id,
+      produtos
+    }
+
+    const listaProdutos = new ListaProdutos(dependencies);
+    listaProdutos.render()
+
+
+  </script>
+</body>
+</html>

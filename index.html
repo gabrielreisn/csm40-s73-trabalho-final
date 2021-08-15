@@ -11,92 +11,68 @@
     <script src="src/Produto.js"></script>
     <script src="src/Fetch.js"></script>
     <script src="src/Loja.js"></script>
+    <script src="src/CategoriaForm.js"></script>
+    <script src="src/CategoriaList.js"></script>
+    <script src="src/CategoriaController.js"></script>
     <link rel="stylesheet" href="css/global.css">
-    <style>
-      
-      .imagem{
-        border-radius: 50%;
-        width: 50px;
-        height: 50px;
-      }
-
-      .list{
-        background-color: grey;
-        width:190px;
-        display: flex;
-        align-items: center;
-        padding: 0px 0px 0px 15px;
-      }
-
-      .nome{
-        font-size: 25px;
-        padding-left: 10px;
-      }
-
-
-
-    </style>
   </head>
   <body>
     <div id="Categorias">
 
-      <div class="list">
-        <img src="img/default.jpg" class="imagem"> </img>
-        <p class="nome">teste</p>
+      <div id="lista_categorias"></div>
+
+      <button id="botao_categoria">&plus; Adicionar</button>
+
+      <div id="modal_categoria" class="modal" style="display:none;">
+        <div class="modal-content">
+          <span class="close" id="close_categoria">&times;</span>
+          <div>
+            <h4>Categorias</h4></br></br>
+            <form >
+              <label>Categoria</label>
+              <input type="text" id="id_categoria">
+              <input type="text" id="nome_categoria"  placeholder="Nome">
+              <input type="submit" class="input-submit color-blue" id="form_categoria" value="INSERIR">
+            </form>
+          </div>
+        </div>
       </div>
 
-      <button id="myBtn">Open Modal</button>
 
-      <div id="myModal" class="modal" style="display: none;">
+      <div id="modal_categoria_update" class="modal" style="display:none;">
         <div class="modal-content">
-          <span class="close" id="close">&times;</span>
-          <p>Some text in the Modal..</p>
+          <span class="close" id="close_categoria_update">&times;</span>
+          <div>
+            <h4>Categorias</h4></br></br>
+            <form >
+              <label>Categoria</label>
+              <input type="text" id="id_categoria_update">
+              <input type="text" id="nome_categoria_update"  placeholder="Nome">
+              <input type="submit" class="input-submit color-blue" id="form_categoria_update" value="ALTERAR">
+              <input type="submit" class="input-submit color-red" id="form_categoria_remove" value="REMOVER">
+            </form>
+          </div>
         </div>
       </div>
     </div>
 
-    <div id="Produtos"></div>
 
     <script>
-
-
-      const abrirModal = _ => {
-        const modal = document.getElementById("myModal");
-        modal.style.display = "block";
+      const loja = new Loja()
+      const produtos = loja.produtos()
+      
+      const categorias = loja.categorias()
+      const categoriaForm = new CategoriaForm(loja)    
+      const categoriaLista = new CategoriaList("lista_categorias");
+      
+      const categoriaDependencies = {
+        categorias,
+        categoriaForm,
+        categoriaLista
       }
 
-      const fecharModal = _ => {
-        const modal = document.getElementById("myModal");
-        modal.style.display = "none";
-      }
-
-      const object = document.querySelector("#myBtn")
-      const objectClose = document.querySelector("#close")
-      object.addEventListener("click", abrirModal)
-      objectClose.addEventListener("click", fecharModal)
-
-
-
-      const Main = async (_) => {
-        const loja = new Loja();
-        const categorias = loja.categorias();
-        const produtos = loja.produtos();
-        const categoria = await categorias.createCategoria();
-
-        const produto = produtos.createProduto();
-        produto.id = 135;
-        produto.nome = "Shampoo automotivel 2";
-        produto.categoria = 58;
-        produto.descricao = "Voxx";
-        produto.preco = 65.6;
-        produto.imagem = "/img/produto_sem_foto.png";
-        produto.codigo = 152;
-        produto.peso = 0.1;
-
-        produto.inserir();
-
-        produtos.listar();
-      };
+      const categoriaController = new CategoriaController(categoriaDependencies)
+      categoriaController.carregarListaCategoria()
 
     </script>
   </body>
