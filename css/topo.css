@@ -1,0 +1,30 @@
+.topnav {
+  background-color: rgb(255, 255, 255);
+  position: fixed;
+  text-align: center;
+  width:100%;
+  border-bottom: 1px solid #888;
+}
+
+
+.topnav-centered{
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.topnav-centered a {
+  margin:0px;
+  display: block;
+  color:  rgba(0, 125, 255);
+  text-align: center;
+  padding: 8px 15px;
+  text-decoration: none;
+  font-size: 17px;
+  display: inline-block;
+}
+
+.topnav a.active {
+  background-color: rgba(0, 125, 255);
+  border-radius: 5px;
+  color: white;
+}

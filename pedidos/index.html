@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="/src/Categorias.js"></script>
+  <script src="/src/Categoria.js"></script>
+  <script src="/src/Produtos.js"></script>
+  <script src="/src/Produto.js"></script>
+  <script src="/src/Pedidos.js"></script>
+  <script src="/src/Pedido.js"></script>
+  <script src="/src/ListaPedidos.js"></script>
+  <script src="/src/Fetch.js"></script>
+  <script src="/src/Loja.js"></script>
+  <script src="/src/Items.js"></script>
+  <script src="/src/Item.js"></script>
+  <link rel="stylesheet" href="/css/global.css">
+  <link rel="stylesheet" href="/css/list.css">
+  <link rel="stylesheet" href="/css/topo.css">
+
+</head>
+<body>
+  <div class="topnav">
+    <div class="topnav-centered">
+      <a href="/categorias/">Categorias</a>
+      <a href="/produtos/">Produtos</a>
+      <a href="/pedidos/" class="active">Pedidos</a>
+    </div>
+  </div>
+  
+  <div class="container">
+    <div class="box">
+      <div class="topo">
+        <h2>Pedidos</h2>
+      </div>
+      <hr class="space">
+      <div id="lista" class="lista scroll"></div>
+    </div>
+  </div>
+
+  <script>
+
+    const div_id = "lista"
+    const loja = new Loja();
+    const pedidos = loja.pedidos();
+
+    const dependencies = {
+      div_id,
+      pedidos
+    }
+
+    const listaPedidos = new ListaPedidos(dependencies);
+    listaPedidos.render()
+
+  </script>
+</body>
+</html>

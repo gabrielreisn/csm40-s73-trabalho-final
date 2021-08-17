@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="/src/Params.js"></script>
+  <script src="/src/Categorias.js"></script>
+  <script src="/src/Categoria.js"></script>
+  <script src="/src/Produtos.js"></script>
+  <script src="/src/Produto.js"></script>
+  <script src="/src/Fetch.js"></script>
+  <script src="/src/Loja.js"></script>
+  <script src="/src/CategoriaForm.js"></script>
+  <script src="/src/Pedidos.js"></script>
+  <script src="/src/Pedido.js"></script>
+  <script src="/src/ListaPedidos.js"></script>
+  <script src="/src/Items.js"></script>
+  <script src="/src/Item.js"></script>
+
+  <link rel="stylesheet" href="/css/global.css">
+  <link rel="stylesheet" href="/css/list.css">
+  <link rel="stylesheet" href="/css/topo.css">
+  <style>
+
+    #lista_cliente{
+      margin: 10px 0px;
+    }
+
+    .space-between{
+      display: flex;
+      justify-content: space-between; 
+      width: 100%;
+    }
+
+    .dado-cliente{
+      padding-top:5px;
+    }
+
+    .info{
+      text-align: right ;
+      padding-right: 10px;
+      font-weight:600;
+    }
+
+    .produto-nome{
+      display: flex;
+      align-items: center;
+    }
+
+    .space-right{
+      margin-right: 10px;
+      background-color: rgb(0, 125, 255);
+      color: white;
+      border-radius: 50%;
+      font-size: 14px;
+      width: 21px;
+      height: 21px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      float:left;
+    }
+  </style>
+</head>
+<body>
+
+
+  <div class="modal" style="display:inline-block;">
+    <div class="modal-content">
+      <a href="/pedidos/" class="btn-adicionar">voltar</a>
+      <br><br>
+      <div id="lista_cliente"></div>
+      <br>
+      <div id="lista_produtos" class="lista scroll"></div>
+    </div>
+  </div>
+  <script>
+
+    class ListaCliente{
+      constructor(dados){ this.dados = dados; }
+
+     async render(){
+      const obj = this.dados
+      const div = document.getElementById("lista_cliente")
+      const table = document.createElement("table");
+
+      table.appendChild(this.getLine("nome: ", obj.nome))
+      table.appendChild(this.getLine("cpf: ", obj.cpf))
+      table.appendChild(this.getLine("cep: ", obj.cep))
+      table.appendChild(this.getLine("rua: ", obj.rua))
+      table.appendChild(this.getLine("numero: ", obj.numero))
+      table.appendChild(this.getLine("bairo: ", obj.bairro))
+      table.appendChild(this.getLine("cidade: ", obj.cidade))
+      table.appendChild(this.getLine("UF: ", obj.uf))
+      div.appendChild(table)
+    }
+
+      getLine(key, value){
+        const div = document.createElement("tr");
+        const info = document.createElement("td");
+        const data = document.createElement("td");
+        div.className = "dado-cliente"
+        info.className = "info"
+        info.appendChild(document.createTextNode(key))
+        data.appendChild(document.createTextNode(value))
+        div.appendChild(info);
+        div.appendChild(data);
+
+        return div;
+      }
+    }
+
+    class ListaProdutos{
+
+      constructor({ div_id, produtos }){
+        this.div_lista_produtos = div_id
+        this.produtos = produtos
+      }
+
+      async render(){
+        const lista_produtos = document.getElementById(this.div_lista_produtos)
+        const dados = await this.produtos
+        dados.forEach(produto => {
+          const elementHTML = this.getItem(produto)
+          lista_produtos.appendChild(elementHTML)
+        })
+      }
+
+      getItem(dado){
+        const a = document.createElement('a');
+        const div = document.createElement('div')
+        const image = document.createElement('img')
+        const paragraph = document.createElement('div')
+        
+        div.className = "list"
+        image.src = dado.imagem
+        image.className = "imagem"
+        paragraph.className = "nome"
+        paragraph.className += " space-between"
+        paragraph.innerHTML = `
+            <span class="produto-nome"> ${dado.nome} </span>
+            <span class="space-right">${parseInt(dado.qtd)} </span>
+        `;
+        div.appendChild(image)
+        div.appendChild(paragraph)
+   
+        return div;
+      }
+    }
+
+
+    const loja = new Loja()
+
+    const id = Params.get().id
+    const pedidos = loja.pedidos() // Dados Clientes
+    const items = loja.items() // IDs com os produtos
+    const produtos = loja.produtos()
+    
+    const carregarDados = async id => {
+      const cliente = await pedidos.getPedido(id)
+      const itemsCliente = await items.getPedidos(id)
+      const listaCliente = new ListaCliente(cliente)
+      listaCliente.render()
+      const todosProduto = await produtos.getLista()
+      const itemsFiltrados  = []
+      itemsCliente.forEach(item => {
+        const produto = getProduto(todosProduto, item.produto)
+        if(produto) itemsFiltrados.push({...item,...produto})
+      })
+      const dependencies = {
+        div_id: "lista_produtos",
+        produtos: itemsFiltrados
+      }
+
+      const listaProdutos = new ListaProdutos(dependencies);
+      listaProdutos.render()
+    }
+
+    const getProduto = (array, idProduto) =>{
+      const dados = array.find(produto => produto.id == idProduto)
+      return dados
+    }
+
+
+    carregarDados(id)
+
+
+  </script>
+</body>
+</html>

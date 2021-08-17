@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="/src/Params.js"></script>
+  <script src="/src/Categorias.js"></script>
+  <script src="/src/Categoria.js"></script>
+  <script src="/src/Produtos.js"></script>
+  <script src="/src/Produto.js"></script>
+  <script src="/src/Fetch.js"></script>
+  <script src="/src/Loja.js"></script>
+  <script src="/src/ProdutoForm.js"></script>
+  <script src="/src/Pedidos.js"></script>
+  <script src="/src/Pedido.js"></script>
+  <script src="/src/ListaPedidos.js"></script>
+  <script src="/src/Items.js"></script>
+  <script src="/src/Item.js"></script>
+  <link rel="stylesheet" href="/css/global.css">
+
+</head>
+<body>
+
+
+  <div class="modal" style="display:inline-block;">
+    <div class="modal-content">
+      <form >
+        <a href="/produtos/">voltar</a>
+        <select id="id_categoria_produto"></select>
+        <input type="hidden" id="id_produto">
+        <input type="text" id="nome_produto" placeholder="Nome">
+        <input type="text" id="descricao_produto" placeholder="Descricao">
+        <input type="text" id="preco_produto" placeholder="Preço">
+        <input type="text" id="imagem_produto" placeholder="Imagem">
+        <input type="text" id="codigo_produto" placeholder="Codigo">
+        <input type="text" id="peso_produto" placeholder="Peso">
+        <input type="submit" class="input-submit color-blue" id="inserir" value="INSERIR">
+      </form>
+    </div>
+  </div>
+  <script>
+
+    const loja = new Loja()
+    const categorias = loja.categorias()
+    const form = new ProdutoForm(loja)
+
+    const getComboBox= async _ => {
+      const categoriasList = await categorias.getLista()
+      const selectBox = document.querySelector("#id_categoria_produto")
+      categoriasList.forEach(cat => {
+        const option = document.createElement("option")
+        option.value = cat.id
+        option.innerHTML = cat.nome
+        selectBox.appendChild(option)
+      })
+
+    }
+
+    const inserirProduto = event => {
+      event.preventDefault()
+      form.insert()
+        .then(r => r.json())
+        .then(json => {
+          const id = json.dados.id
+          window.location.href = `/produtos/editar.html?id=${id}`
+        })
+  
+    }
+
+    getComboBox()
+    const botaoInserir = document.getElementById("inserir")
+
+    botaoInserir.addEventListener("click", inserirProduto) 
+
+  </script>
+</body>
+</html>

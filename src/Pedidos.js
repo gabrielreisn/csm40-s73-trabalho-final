@@ -1,10 +1,9 @@
-class Produtos{
+class Pedidos{
   constructor(fetch){
     this.t = "listar" 
-    this.c = "produto"
+    this.c = "pedido"
     this.fetch = fetch
     this.setObjectToFetch()
-    this.dados = null;
   }
 
   setObjectToFetch(){
@@ -14,23 +13,21 @@ class Produtos{
     })
   }
 
-  createProduto(){
-    return new Produto(new Fetch(), this.c)
+  createPedido(){
+    return new Pedido(new Fetch(), this.c)
   }
 
-  getProduto(id){
+  getPedido(id){
     return this.getLista().then(array => array.find(obj => obj.id == id))
   }
 
-
   getLista(){
-    this.dados = this.fetch
+    return this.fetch
       .listar()
       .then(response => response.json())
       .then(json => json.dados.map(element => {
-        return Object.assign(this.createProduto(), element)
+        return Object.assign(this.createPedido(), element)
       }));
-    return this.dados;
   }
 
   listar(){

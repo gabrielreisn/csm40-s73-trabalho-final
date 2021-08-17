@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="/src/Params.js"></script>
+  <script src="/src/Categorias.js"></script>
+  <script src="/src/Categoria.js"></script>
+  <script src="/src/Produtos.js"></script>
+  <script src="/src/Produto.js"></script>
+  <script src="/src/Fetch.js"></script>
+  <script src="/src/Loja.js"></script>
+  <script src="/src/CategoriaForm.js"></script>
+  <script src="/src/Pedidos.js"></script>
+  <script src="/src/Pedido.js"></script>
+  <script src="/src/ListaPedidos.js"></script>
+  <script src="/src/Items.js"></script>
+  <script src="/src/Item.js"></script>
+  <link rel="stylesheet" href="/css/global.css">
+
+</head>
+<body>
+
+
+  <div class="modal" style="display:inline-block;">
+    <div class="modal-content">
+      <form >
+        <a href="/categorias/">voltar</a>
+        <br><br>
+        <input type="hidden" id="id_categoria">
+        <input type="text" id="nome_categoria"  placeholder="Nome">
+        <input type="submit" class="input-submit color-blue" id="update" value="ALTERAR">
+        <input type="submit" class="input-submit color-red" id="remove" value="REMOVER">
+      </form>
+    </div>
+  </div>
+  <script>
+
+    const loja = new Loja()
+    const form = new CategoriaForm(loja)
+
+    const id = Params.get().id
+    const categorias = loja.categorias()
+    const produtos = loja.produtos()
+    
+    const carregarDados = async id => {
+      const categoria = await categorias.getCategoria(id)
+      form.carregarObjeto(categoria.id)
+    }
+
+    const updateCategoria = event => {
+      event.preventDefault()
+      form.update()
+      alert("Categoria Alterada com sucesso")
+    }
+
+    const removeCategoria = async event => {
+      event.preventDefault()
+      const html = document.getElementById("id_categoria")
+      const existe = await verificaSeExisteProduto(html.value)
+      const confirmado = confirm("Tem certeza que deseja excluir?")
+      if(confirmado){
+        if(existe)
+          alert("Elemento não pode ser removido: existe produtos associados a ele")
+        else{
+          await form.delete()
+          window.location.href = "/categorias/"
+        }
+      }
+    }
+
+    const verificaSeExisteProduto = async id => {
+      const lista = await produtos.getLista()
+      const encontrado = lista.find(element => element.categoria == id)
+      return encontrado
+    }
+
+    carregarDados(id)
+
+    const botaoUpdate = document.getElementById("update")
+    const botaoDelete = document.getElementById("remove")
+
+    botaoUpdate.addEventListener("click", updateCategoria)
+    botaoDelete.addEventListener("click", removeCategoria)
+
+  </script>
+</body>
+</html>
