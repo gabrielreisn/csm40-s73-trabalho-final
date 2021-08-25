@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loja</title>
+  <script src="/src/Categorias.js"></script>
+  <script src="/src/Categoria.js"></script>
+  <script src="/src/Produtos.js"></script>
+  <script src="/src/Produto.js"></script>
+  <script src="/src/Fetch.js"></script>
+  <script src="/src/Loja.js"></script>
+  <script src="/src/Pedidos.js"></script>
+  <script src="/src/Pedido.js"></script>
+  <script src="/src/ListaPedidos.js"></script>
+  <script src="/src/Items.js"></script>
+  <script src="/src/Item.js"></script>
+  <link rel="stylesheet" href="/css/global.css">
+  <link rel="stylesheet" href="/css/list.css">
+  <link rel="stylesheet" href="/css/topo.css">
+  <link rel="stylesheet" href="/css/loja.css">
+  <link rel="stylesheet" href="/css/checkout.css">
+</head>
+<body>
+  <div class="container">
+    <div class="box">
+      <div class="topo">
+        <h2>Produtos</h2>
+        <a href="/checkout/index.html" class="checkout-btn" onclick="saveToSessionStorage()">Continuar</a>
+      </div>
+      <hr class="space">
+      <div id="lista_produtos" class="lista scroll"></div>
+    </div>
+    <div class="cart-box" id="carrinho_buiar" ondragover="allowDrop(event)" ondrop="drop(event)"></div>
+  </div>
+  
+
+  <script>
+
+    function saveToSessionStorage(){
+      const cart = [...document.querySelectorAll("[id^=list_item_]")].map(e => {
+        const [name,price] = e.querySelector(".nome").innerText.split(" - R$ ")
+        const amount = e.querySelector("[id^=amount_]").innerText
+        const productId = e.id.replace("list_item_","")
+
+        return {
+          name,
+          amount,
+          productId,
+          price: price.replace(',','.')
+        }
+      })
+
+      window.sessionStorage.setItem('cart',JSON.stringify(cart))
+    }
+
+    function drop(ev){
+      const id = ev.dataTransfer.getData("drag_key")
+      const element = document.getElementById(id)
+      const clone = renderCartItem(element,id)
+
+      ev.target.appendChild(clone)
+    }
+
+    function allowDrop(ev){
+      ev.preventDefault()
+    }
+
+    class ListaProdutos{
+
+        constructor({ div_id, produtos }){
+          this.div_lista_produtos = div_id
+          this.produtos = produtos
+        }
+
+        getProdutos(){
+          this.dados = this.produtos.getLista()
+          return this.dados
+        }
+
+
+        async render(){
+          const lista_produtos = document.getElementById(this.div_lista_produtos)
+          const dados = await this.getProdutos()
+          dados.forEach(produto => {
+            const elementHTML = this.getItem(produto)
+            lista_produtos.appendChild(elementHTML)
+          })
+        }
+
+        getItem(dado){
+          const a = document.createElement('a');
+          const div = document.createElement('div')
+          const image = document.createElement('img')
+          const paragraph = document.createElement('p')
+          
+          div.id = "categoria_" + dado.id
+          div.className = "list"
+          div.draggable = true
+          div.ondragstart = (e) => e.dataTransfer.setData("drag_key", e.target.id);
+          image.src = dado.imagem
+          image.className = "imagem"
+          paragraph.className = "nome"
+          paragraph.innerHTML = `${dado.nome} - R$ ${dado.preco.replace('.',',')}`
+          div.appendChild(image)
+          div.appendChild(paragraph)
+          a.appendChild(div)
+
+          div.addEventListener('dblclick',()=>{
+            const cart = document.getElementById('carrinho_buiar')
+            const clone = renderCartItem(div,dado.id)
+            cart.appendChild(clone)
+          })
+
+          return a;
+        }
+    }
+
+
+    function renderCartItem(divElement,itemId){
+      const ids = [...document.querySelectorAll("[id^=list_item_]")].map(e => e.id)
+            const newId = "list_item_" + itemId
+            if(ids.includes(newId)) return null
+
+
+            // const cart = document.getElementById('carrinho_buiar')
+            const clone = divElement.cloneNode(true)
+            clone.id = newId
+            const minusButton = document.createElement('button')
+            minusButton.id = "minus_" + itemId
+            minusButton.className = "counter-button"
+            minusButton.innerText = '-'
+            const amount = document.createElement('span')
+            const amountId = "amount_" + itemId
+            amount.id = amountId
+            amount.innerText = '1'
+            const plusButton = document.createElement('button')
+            plusButton.id = "plus_" + itemId
+            plusButton.className = "counter-button"
+            plusButton.innerText = '+'
+
+            minusButton.addEventListener('click',()=>{
+              const current = document.getElementById(amountId)
+              const newValue = parseInt(current.innerText) - 1
+
+              if(newValue === 0) clone.remove()
+
+              current.innerText = newValue
+            })
+
+            plusButton.addEventListener('click',()=>{
+              const current = document.getElementById(amountId)
+              const newValue = parseInt(current.innerText) + 1
+              current.innerText = newValue
+            })
+
+
+            clone.appendChild(minusButton)
+            clone.appendChild(amount)
+            clone.appendChild(plusButton)
+
+            return clone
+
+            // cart.appendChild(clone)
+    }
+
+    const div_id = "lista_produtos"
+    const loja = new Loja();
+    const produtos = loja.produtos();
+
+    const dependencies = {
+      div_id,
+      produtos
+    }
+
+    const listaProdutos = new ListaProdutos(dependencies);
+    listaProdutos.render()
+
+  </script>
+</body>
+</html>
