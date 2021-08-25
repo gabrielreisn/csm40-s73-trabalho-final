@@ -1,0 +1,42 @@
+* {
+  --primary-blue: rgba(0, 125, 255);
+}
+
+.checkout-form {
+  border: 1px solid #888;
+  border-radius: 5px;
+  padding: 1rem;
+}
+
+.sm-form-input {
+  margin: 0.5rem 0.2rem;
+  padding: 0.2rem;
+}
+
+.checkout-footer {
+  display: flex;
+  flex-direction: row-reverse;
+}
+
+.checkout-btn {
+  margin-top: 1rem;
+  padding: 5px;
+  padding-left: 17px;
+  padding-right: 15px;
+  border-radius: 5px;
+  font-size: 15px;
+  color: var(--primary-blue);
+  background-color: white;
+  border: 1px solid var(--primary-blue);
+}
+
+.checkout-btn:hover{
+  padding: 5px;
+  padding-left: 17px;
+  padding-right: 15px;
+  border-radius: 5px;
+  font-size: 15px;
+  background-color: var(--primary-blue);
+  color: white;
+  border: 1px solid var(--primary-blue);
+}

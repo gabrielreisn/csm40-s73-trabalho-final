@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confirmação</title>
+  <link rel="stylesheet" href="/css/global.css">
+  <link rel="stylesheet" href="/css/list.css">
+  <link rel="stylesheet" href="/css/topo.css">
+  <link rel="stylesheet" href="/css/checkout.css">
+  <script src="/src/Validadores.js"></script>
+</head>
+<body>
+  <div class="container">
+    <div class="box">
+      <div class="topo">
+        <h2>Confirmação</h2>
+      </div>
+      <form>
+        <hr class="space">
+        <div id="checkout:user" class="checkout-form"> </div>
+        <hr class="space">
+        <div id="checkout:cart" class="checkout-form"> </div>
+        <div class="space"> </div>
+        <button id="confirm-button">Confirmar</button>
+      </form>
+      <div id="success"> </div>
+    </div>
+  </div>
+
+  <script>
+    const cart = window.sessionStorage.getItem('cart')
+    const user = window.sessionStorage.getItem('userData')
+
+    const userData = JSON.parse(user)
+    const cartData = JSON.parse(cart)
+
+    function renderUserDetails(){
+      const rootNode = document.getElementById('checkout:user')
+
+      const h3 = document.createElement('h3')
+      h3.innerText = "Dados do cliente"
+
+
+      const {nome,logradouro,cpf,numero,complemento,localidade,uf,bairro,cep} = userData
+
+      const userInfo = document.createElement('p')
+      userInfo.innerText = `nome: ${nome} - cpf: ${cpf}`
+
+      const userAddress = document.createElement('p')
+      userAddress.innerText = `${logradouro}, ${numero} - ${complemento}. ${localidade}, ${bairro} (${uf})`
+
+      const cepInfo = document.createElement('p')
+      cepInfo.innerText = `cep: ${cep}`
+
+      rootNode.appendChild(h3)
+      rootNode.appendChild(userInfo)
+      rootNode.appendChild(userAddress)
+      rootNode.appendChild(cepInfo)
+    }
+
+    function renderUserCartData(){
+      const rootNode = document.getElementById('checkout:cart')
+
+      const h3 = document.createElement('h3')
+      h3.innerText = "Itens"
+      rootNode.appendChild(h3)
+
+      cartData.forEach(el => {
+        const {name,amount,price} = el
+        const data = document.createElement('p')
+        const formattedPrice = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(parseFloat(price))
+        const totalPrice = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format((parseFloat(price) * parseInt(amount)))
+        data.innerText = `${name} (${amount} x ${formattedPrice}) - ${totalPrice}`
+
+        rootNode.appendChild(data)
+      });
+    }
+
+    function renderSuccessMessage(id){
+      const form = document.querySelector('form')
+      form.remove()
+
+      const h3 = document.createElement('h3')
+      h3.innerText = `Pedido confirmado! (id = ${id} )`
+
+      const success = document.getElementById('success')
+      success.className = "checkout-form"
+      success.appendChild(h3)
+    }
+
+    async function sendOrderData(e){
+      e.preventDefault()
+      
+      const {nome,logradouro,cpf,numero,localidade,uf,bairro,cep} = userData
+      const baseUrl = "http://loja.buiar.com/?key=uTnWP17vM2n&f=json&c=pedido&t=inserir&"
+
+      const payload = {
+        nome,
+        numero,
+        bairro,
+        uf,
+        cpf: cpf.replace('-','').replaceAll('.',''),
+        cep: cep.replace('-',''),
+        rua: logradouro,
+        cidade: localidade
+      }
+
+      const url = Object.keys(payload).map(key => `${key}=${payload[key]}&`).join('')
+
+      const req = await fetch(baseUrl + url)
+      const data = await req.json()
+
+      const orderId = data.dados.id
+
+      console.log(data,orderId)
+
+      await sendOrderDetails(orderId)
+    }
+
+    async function sendOrderDetails(orderId){
+      const baseUrl = "http://loja.buiar.com/?key=uTnWP17vM2n&c=item&xf=json&t=inserir&&f=json&"
+
+      const promises = cartData.map(e =>  {
+        const payload = `pedido=${orderId}&produto=${e.productId}&qtd=${e.amount}`
+
+        return fetch(baseUrl + payload)
+      })
+
+      await Promise.all(promises).then(e => console.log('pedido confirmado'))
+
+      renderSuccessMessage(orderId)
+      clearSessionStorage()
+    }
+
+    function clearSessionStorage(){
+      window.sessionStorage.removeItem('cart')
+      window.sessionStorage.removeItem('userData')
+    }
+
+    renderUserDetails()
+    renderUserCartData()
+
+    const confirm = document.getElementById('confirm-button')
+    confirm.addEventListener('click',(event) => sendOrderData(event))
+  </script>
+</body>

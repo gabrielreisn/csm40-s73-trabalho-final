@@ -34,7 +34,7 @@
 
         div.appendChild(paragraph)
         a.appendChild(div)
-        a.setAttribute('href', `./detalhes.html?id=${dado.id}`)
+        a.setAttribute('href', `./detalhes?id=${dado.id}`)
         return a;
       }
     }

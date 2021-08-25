@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout</title>
+  <link rel="stylesheet" href="/css/global.css">
+  <link rel="stylesheet" href="/css/list.css">
+  <link rel="stylesheet" href="/css/topo.css">
+  <link rel="stylesheet" href="/css/checkout.css">
+  <script src="/src/Validadores.js"></script>
+</head>
+<body>
+  <div class="container">
+    <div class="box">
+      <div class="topo">
+        <h2>Checkout</h2>
+      </div>
+      <hr class="space">
+      <div class="checkout-form">
+        <form id="form">
+        <label>
+          Nome
+          <input id="nome" type="text" />
+        </label>
+
+        <label>
+          CPF
+          <input id="cpf" type="text" maxlength="14" onkeyup="javascript: fMasc( this, maskCPF );"/>
+        </label>
+
+
+        <label>
+          CEP
+          <input id="cep" type="text" maxlength="9" onkeyup="javascript: combinedCEPFeatures();"/>
+        </label>
+
+
+        </form>
+        <div class="checkout-footer">
+          <a href="/checkout/confirmar.html " onclick="javascript: storeData();"  class="checkout-btn">Confirmar</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+<script>
+    const cepInput = document.getElementById('cep')
+    async function combinedCEPFeatures(){
+      fMascCEP( cepInput, maskCEP )
+      const cep = extraiCEP(cepInput.value)
+      
+      if(cep.length !== 8) return null
+      
+      const response = await fetch(`https://viacep.com.br/ws/${cep}/json`)
+      const data = await response.json()
+
+
+      const apiDependencies = ['logradouro','bairro','localidade','uf']
+      const emptyFields = ['numero','complemento']
+
+      apiDependencies.forEach(el => createAddressSectionAndValidate(el,data[el]))
+      emptyFields.forEach(el => createEmptyAddressElement(el))
+    }
+
+
+    function createAddressSectionAndValidate(label,value){
+
+      const formItem = document.getElementById(label)
+
+      if(formItem){
+        formItem.value = value
+        return null
+      } 
+
+      const form = document.getElementById('form')
+
+      const addressSection = document.createElement('input')
+      addressSection.id = label
+      addressSection.value = value
+      addressSection.className = "sm-form-input"
+      addressSection.disabled = true
+
+      form.appendChild(addressSection)
+    }
+
+    function createEmptyAddressElement(label){
+      if(document.getElementById(label)) return null
+
+      const form = document.getElementById('form')
+
+      const addressSection = document.createElement('input')
+      addressSection.id = label
+      addressSection.className = "sm-form-input"
+      addressSection.placeholder=label
+      form.appendChild(addressSection)
+    }
+
+
+    function storeData(){
+      const formValues = ['nome','cpf','cep','logradouro','bairro','localidade','uf','numero','complemento']
+      const formObj = formValues.reduce((ac,cur) => {
+        ac[cur] = document.getElementById(cur).value
+        return ac
+      },{})
+
+      sessionStorage.setItem('userData',JSON.stringify(formObj))
+
+      console.log('aaa',formObj)
+    }
+</script>
+</html>
